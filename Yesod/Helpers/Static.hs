@@ -2,7 +2,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 ---------------------------------------------------------
 --
@@ -95,7 +97,9 @@ type instance Route Static = StaticRoute
 instance RenderRoute StaticRoute where
     renderRoute (StaticRoute x y) = (x, y)
 
-instance Yesod master => YesodDispatch Static master where
+instance ( Yesod master
+         , YesodMiddleware Static master
+         ) => YesodDispatch Static master where
     yesodDispatch (Static set) _ pieces  _ _ =
         Just $ staticAppPieces set pieces
 
